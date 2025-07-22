@@ -1,0 +1,7 @@
+Save Format v3.0(19990112)
+@begin Targets
+ 0 "taller1.pbt";
+@end;
+DefaultTarget "taller1.pbt";
+DefaultExportEncode "UTF-8";
+DefaultRemoteTarget "taller1.pbt";
