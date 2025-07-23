@@ -2,6 +2,8 @@
 forward
 global type w_usuario from window
 end type
+type st_2 from statictext within w_usuario
+end type
 type cb_3 from commandbutton within w_usuario
 end type
 type st_1 from statictext within w_usuario
@@ -32,6 +34,7 @@ boolean resizable = true
 long backcolor = 67108864
 string icon = "AppIcon!"
 boolean center = true
+st_2 st_2
 cb_3 cb_3
 st_1 st_1
 cb_2 cb_2
@@ -120,6 +123,7 @@ dw_usuario.insertrow(0)
 end subroutine
 
 on w_usuario.create
+this.st_2=create st_2
 this.cb_3=create cb_3
 this.st_1=create st_1
 this.cb_2=create cb_2
@@ -128,7 +132,8 @@ this.dw_usuario=create dw_usuario
 this.gb_1=create gb_1
 this.sle_1=create sle_1
 this.gb_2=create gb_2
-this.Control[]={this.cb_3,&
+this.Control[]={this.st_2,&
+this.cb_3,&
 this.st_1,&
 this.cb_2,&
 this.cb_1,&
@@ -139,6 +144,7 @@ this.gb_2}
 end on
 
 on w_usuario.destroy
+destroy(this.st_2)
 destroy(this.cb_3)
 destroy(this.st_1)
 destroy(this.cb_2)
@@ -148,6 +154,24 @@ destroy(this.gb_1)
 destroy(this.sle_1)
 destroy(this.gb_2)
 end on
+
+type st_2 from statictext within w_usuario
+integer x = 910
+integer y = 132
+integer width = 1353
+integer height = 244
+integer textsize = -20
+integer weight = 700
+fontcharset fontcharset = ansi!
+fontpitch fontpitch = variable!
+fontfamily fontfamily = swiss!
+string facename = "Tahoma"
+long textcolor = 8421376
+long backcolor = 67108864
+string text = "Prácticas Appeon"
+alignment alignment = center!
+boolean focusrectangle = false
+end type
 
 type cb_3 from commandbutton within w_usuario
 integer x = 910
@@ -277,7 +301,7 @@ integer taborder = 10
 string title = "none"
 string dataobject = "d_usuario"
 boolean livescroll = true
-borderstyle borderstyle = StyleRaised!
+borderstyle borderstyle = styleraised!
 end type
 
 event constructor;settransobject(SQLCA)

@@ -63,7 +63,7 @@ if sqlca.sqlcode <> 0 then
 	messagebox("Error de conexión", sqlca.sqlerrtext)
 else
 	messagebox("Conexión exitosa", "Contectado!")
-	open(w_usuario)
+	open(w_principal)
 end if
 
 

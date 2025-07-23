@@ -1,0 +1,184 @@
+﻿$PBExportHeader$m_principal.srm
+forward
+global type m_principal from menu
+end type
+type m_ejemplodegrafica from menu within m_principal
+end type
+type m_ejemplodeventana from menu within m_ejemplodegrafica
+end type
+type m_ejemplodegráfica from menu within m_ejemplodegrafica
+end type
+type m_ejemplodegráficapersonalizada from menu within m_ejemplodegrafica
+end type
+type m_ejemplodegrafica from menu within m_principal
+m_ejemplodeventana m_ejemplodeventana
+m_ejemplodegráfica m_ejemplodegráfica
+m_ejemplodegráficapersonalizada m_ejemplodegráficapersonalizada
+end type
+global type m_principal from menu
+m_ejemplodegrafica m_ejemplodegrafica
+end type
+end forward
+
+global type m_principal from menu
+m_ejemplodegrafica m_ejemplodegrafica
+end type
+global m_principal m_principal
+
+on m_principal.create
+m_principal=this
+call super::create
+this.text = "m_principal"
+this.menutextcolor = 134217735
+this.menubackcolor = 134217732
+this.menuhighlightcolor = 134217741
+this.textsize = 8
+this.weight = 400
+this.facename = "Tahoma"
+this.titlebackcolor = 134217730
+this.bitmapbackcolor = 12632256
+this.menubitmaps = true
+this.titlegradient = true
+this.toolbartextcolor = 134217746
+this.toolbarbackcolor = 67108864
+this.toolbarhighlightcolor = 134217741
+this.toolbargradient = true
+this.bitmapgradient = true
+this.m_ejemplodegrafica=create m_ejemplodegrafica
+this.Item[UpperBound(this.Item)+1]=this.m_ejemplodegrafica
+end on
+
+on m_principal.destroy
+call super::destroy
+destroy(this.m_ejemplodegrafica)
+end on
+
+type m_ejemplodegrafica from menu within m_principal
+m_ejemplodeventana m_ejemplodeventana
+m_ejemplodegráfica m_ejemplodegráfica
+m_ejemplodegráficapersonalizada m_ejemplodegráficapersonalizada
+end type
+
+on m_ejemplodegrafica.create
+call super::create
+this.text = "Opciones"
+this.menutextcolor = 134217735
+this.menubackcolor = 134217732
+this.menuhighlightcolor = 134217741
+this.textsize = 8
+this.weight = 400
+this.facename = "Tahoma"
+this.titlebackcolor = 134217730
+this.bitmapbackcolor = 12632256
+this.menubitmaps = true
+this.titlegradient = true
+this.toolbartextcolor = 134217746
+this.toolbarbackcolor = 67108864
+this.toolbarhighlightcolor = 134217741
+this.toolbargradient = true
+this.bitmapgradient = true
+this.m_ejemplodeventana=create m_ejemplodeventana
+this.m_ejemplodegráfica=create m_ejemplodegráfica
+this.m_ejemplodegráficapersonalizada=create m_ejemplodegráficapersonalizada
+this.Item[UpperBound(this.Item)+1]=this.m_ejemplodeventana
+this.Item[UpperBound(this.Item)+1]=this.m_ejemplodegráfica
+this.Item[UpperBound(this.Item)+1]=this.m_ejemplodegráficapersonalizada
+end on
+
+on m_ejemplodegrafica.destroy
+call super::destroy
+destroy(this.m_ejemplodeventana)
+destroy(this.m_ejemplodegráfica)
+destroy(this.m_ejemplodegráficapersonalizada)
+end on
+
+type m_ejemplodeventana from menu within m_ejemplodegrafica
+end type
+
+event clicked;open(w_taller1)
+end event
+
+on m_ejemplodeventana.create
+call super::create
+this.text = "Ejemplo de Ventana"
+this.menutextcolor = 134217735
+this.menubackcolor = 134217732
+this.menuhighlightcolor = 134217741
+this.textsize = 8
+this.weight = 400
+this.facename = "Tahoma"
+this.titlebackcolor = 134217730
+this.bitmapbackcolor = 12632256
+this.menubitmaps = true
+this.titlegradient = true
+this.toolbartextcolor = 134217746
+this.toolbarbackcolor = 67108864
+this.toolbarhighlightcolor = 134217741
+this.toolbargradient = true
+this.bitmapgradient = true
+end on
+
+on m_ejemplodeventana.destroy
+call super::destroy
+end on
+
+type m_ejemplodegráfica from menu within m_ejemplodegrafica
+end type
+
+event clicked;open(w_graficos)
+end event
+
+on m_ejemplodegráfica.create
+call super::create
+this.text = "Ejemplo de Gráfica"
+this.menutextcolor = 134217735
+this.menubackcolor = 134217732
+this.menuhighlightcolor = 134217741
+this.textsize = 8
+this.weight = 400
+this.facename = "Tahoma"
+this.titlebackcolor = 134217730
+this.bitmapbackcolor = 12632256
+this.menubitmaps = true
+this.titlegradient = true
+this.toolbartextcolor = 134217746
+this.toolbarbackcolor = 67108864
+this.toolbarhighlightcolor = 134217741
+this.toolbargradient = true
+this.bitmapgradient = true
+end on
+
+on m_ejemplodegráfica.destroy
+call super::destroy
+end on
+
+type m_ejemplodegráficapersonalizada from menu within m_ejemplodegrafica
+end type
+
+event clicked;open(w_graficos1)
+end event
+
+on m_ejemplodegráficapersonalizada.create
+call super::create
+this.text = "Ejemplo de Gráfica Personalizada"
+this.menutextcolor = 134217735
+this.menubackcolor = 134217732
+this.menuhighlightcolor = 134217741
+this.textsize = 8
+this.weight = 400
+this.facename = "Tahoma"
+this.titlebackcolor = 134217730
+this.bitmapbackcolor = 12632256
+this.menubitmaps = true
+this.titlegradient = true
+this.toolbartextcolor = 134217746
+this.toolbarbackcolor = 67108864
+this.toolbarhighlightcolor = 134217741
+this.toolbargradient = true
+this.bitmapgradient = true
+end on
+
+on m_ejemplodegráficapersonalizada.destroy
+call super::destroy
+end on
+

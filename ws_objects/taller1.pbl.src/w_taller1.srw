@@ -12,11 +12,12 @@ global type w_taller1 from window
 integer width = 4791
 integer height = 2632
 boolean titlebar = true
-string title = "Taller1"
 boolean controlmenu = true
 boolean minbox = true
 boolean maxbox = true
 boolean resizable = true
+windowtype windowtype = child!
+windowstate windowstate = maximized!
 long backcolor = 67108864
 string icon = "AppIcon!"
 boolean center = true
