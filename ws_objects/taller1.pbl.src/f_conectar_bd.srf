@@ -1,0 +1,26 @@
+﻿$PBExportHeader$f_conectar_bd.srf
+global type f_conectar_bd from function_object
+end type
+
+forward prototypes
+global function integer f_conectar_bd ()
+end prototypes
+
+global function integer f_conectar_bd ();// Profile taller1
+SQLCA.DBMS = "ODBC"
+SQLCA.AutoCommit = False
+SQLCA.DBParm = "ConnectString='DSN=PostgreSQL30;UID=postgres;PWD=admin1'"
+
+connect using sqlca;
+
+if sqlca.sqlcode <> 0 then
+//	messagebox("Error de conexión", sqlca.sqlerrtext)
+	return -1
+else
+//	messagebox("Conexión exitosa", "Contectado!")
+	return 1
+	
+//	open(w_principal)
+end if
+end function
+

@@ -22,11 +22,11 @@ global type w_crud from window
 integer width = 4754
 integer height = 1980
 boolean titlebar = true
-string title = "Untitled"
 boolean controlmenu = true
 boolean minbox = true
 boolean maxbox = true
 boolean resizable = true
+windowtype windowtype = child!
 long backcolor = 67108864
 string icon = "AppIcon!"
 boolean center = true

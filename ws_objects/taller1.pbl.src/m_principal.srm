@@ -6,12 +6,15 @@ type m_ejemplodegrafica from menu within m_principal
 end type
 type m_ejemplodeventana from menu within m_ejemplodegrafica
 end type
+type m_ejemplodecrud from menu within m_ejemplodegrafica
+end type
 type m_ejemplodegráfica from menu within m_ejemplodegrafica
 end type
 type m_ejemplodegráficapersonalizada from menu within m_ejemplodegrafica
 end type
 type m_ejemplodegrafica from menu within m_principal
 m_ejemplodeventana m_ejemplodeventana
+m_ejemplodecrud m_ejemplodecrud
 m_ejemplodegráfica m_ejemplodegráfica
 m_ejemplodegráficapersonalizada m_ejemplodegráficapersonalizada
 end type
@@ -55,6 +58,7 @@ end on
 
 type m_ejemplodegrafica from menu within m_principal
 m_ejemplodeventana m_ejemplodeventana
+m_ejemplodecrud m_ejemplodecrud
 m_ejemplodegráfica m_ejemplodegráfica
 m_ejemplodegráficapersonalizada m_ejemplodegráficapersonalizada
 end type
@@ -78,9 +82,11 @@ this.toolbarhighlightcolor = 134217741
 this.toolbargradient = true
 this.bitmapgradient = true
 this.m_ejemplodeventana=create m_ejemplodeventana
+this.m_ejemplodecrud=create m_ejemplodecrud
 this.m_ejemplodegráfica=create m_ejemplodegráfica
 this.m_ejemplodegráficapersonalizada=create m_ejemplodegráficapersonalizada
 this.Item[UpperBound(this.Item)+1]=this.m_ejemplodeventana
+this.Item[UpperBound(this.Item)+1]=this.m_ejemplodecrud
 this.Item[UpperBound(this.Item)+1]=this.m_ejemplodegráfica
 this.Item[UpperBound(this.Item)+1]=this.m_ejemplodegráficapersonalizada
 end on
@@ -88,6 +94,7 @@ end on
 on m_ejemplodegrafica.destroy
 call super::destroy
 destroy(this.m_ejemplodeventana)
+destroy(this.m_ejemplodecrud)
 destroy(this.m_ejemplodegráfica)
 destroy(this.m_ejemplodegráficapersonalizada)
 end on
@@ -119,6 +126,36 @@ this.bitmapgradient = true
 end on
 
 on m_ejemplodeventana.destroy
+call super::destroy
+end on
+
+type m_ejemplodecrud from menu within m_ejemplodegrafica
+end type
+
+event clicked;open(w_crud)
+end event
+
+on m_ejemplodecrud.create
+call super::create
+this.text = "Ejemplo de CRUD"
+this.menutextcolor = 134217735
+this.menubackcolor = 134217732
+this.menuhighlightcolor = 134217741
+this.textsize = 8
+this.weight = 400
+this.facename = "Tahoma"
+this.titlebackcolor = 134217730
+this.bitmapbackcolor = 12632256
+this.menubitmaps = true
+this.titlegradient = true
+this.toolbartextcolor = 134217746
+this.toolbarbackcolor = 67108864
+this.toolbarhighlightcolor = 134217741
+this.toolbargradient = true
+this.bitmapgradient = true
+end on
+
+on m_ejemplodecrud.destroy
 call super::destroy
 end on
 

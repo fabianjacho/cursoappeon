@@ -52,21 +52,23 @@ destroy(error)
 destroy(message)
 end on
 
-event open;// Profile taller1
-SQLCA.DBMS = "ODBC"
-SQLCA.AutoCommit = False
-SQLCA.DBParm = "ConnectString='DSN=PostgreSQL30;UID=postgres;PWD=admin1'"
+event open;//// Profile taller1
+//SQLCA.DBMS = "ODBC"
+//SQLCA.AutoCommit = False
+//SQLCA.DBParm = "ConnectString='DSN=PostgreSQL30;UID=postgres;PWD=admin1'"
+//
+//connect using sqlca;
+//
+//if sqlca.sqlcode <> 0 then
+//	messagebox("Error de conexión", sqlca.sqlerrtext)
+//else
+//	messagebox("Conexión exitosa", "Contectado!")
+//	open(w_principal)
+//end if
+//
+//
+//
 
-connect using sqlca;
-
-if sqlca.sqlcode <> 0 then
-	messagebox("Error de conexión", sqlca.sqlerrtext)
-else
-	messagebox("Conexión exitosa", "Contectado!")
-	open(w_principal)
-end if
-
-
-
+open(w_usuario)
 end event
 

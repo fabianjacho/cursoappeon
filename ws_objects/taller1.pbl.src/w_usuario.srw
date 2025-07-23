@@ -23,14 +23,13 @@ end type
 end forward
 
 global type w_usuario from window
-integer width = 4754
-integer height = 1980
+integer width = 4727
+integer height = 1956
 boolean titlebar = true
 string title = "Untitled"
 boolean controlmenu = true
 boolean minbox = true
-boolean maxbox = true
-boolean resizable = true
+windowtype windowtype = popup!
 long backcolor = 67108864
 string icon = "AppIcon!"
 boolean center = true
@@ -248,6 +247,9 @@ string facename = "Tahoma"
 string text = "Cancelar"
 end type
 
+event clicked;close(parent)
+end event
+
 type cb_1 from commandbutton within w_usuario
 integer x = 1449
 integer y = 988
@@ -266,6 +268,8 @@ end type
 event clicked;string ls_clave, ls_usuario
 string ls_encrypt
 integer li_existe
+
+if f_conectar_bd() = -1 then return
 
 dw_usuario.accepttext( )
 ls_usuario = dw_usuario.object.usuario[1]
@@ -286,6 +290,8 @@ if lenA(ls_clave) > 0 then
 	
 	if li_existe > 0 then
 		messagebox("","Acceso Correcto")
+		open(w_principal)
+		close(parent)
 	else
 		messagebox("","Usuario no existe")		
 	end if
