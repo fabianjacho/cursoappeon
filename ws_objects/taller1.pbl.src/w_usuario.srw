@@ -263,6 +263,7 @@ fontpitch fontpitch = variable!
 fontfamily fontfamily = swiss!
 string facename = "Tahoma"
 string text = "Ingresar"
+boolean default = true
 end type
 
 event clicked;string ls_clave, ls_usuario

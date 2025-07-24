@@ -17,6 +17,7 @@ boolean minbox = true
 boolean maxbox = true
 boolean resizable = true
 windowtype windowtype = mdi!
+windowstate windowstate = maximized!
 long backcolor = 67108864
 string icon = "AppIcon!"
 boolean center = true

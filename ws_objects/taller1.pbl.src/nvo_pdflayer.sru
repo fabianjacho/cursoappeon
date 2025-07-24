@@ -1,0 +1,1419 @@
+﻿$PBExportHeader$nvo_pdflayer.sru
+forward
+global type nvo_pdflayer from dotnetobject
+end type
+end forward
+
+global type nvo_pdflayer from dotnetobject
+end type
+global nvo_pdflayer nvo_pdflayer
+
+type variables
+
+PUBLIC:
+String is_assemblypath = "C:\Users\CEC\Documents\APPEON_FJ\Firmar\Firmar\bin\Debug\net461\itextsharp.dll"
+String is_classname = "iTextSharp.text.pdf.PdfLayer"
+
+/*      Error types       */
+Constant Int SUCCESS        =  0 // No error since latest reset
+Constant Int LOAD_FAILURE   = -1 // Failed to load assembly
+Constant Int CREATE_FAILURE = -2 // Failed to create .NET object
+Constant Int CALL_FAILURE   = -3 // Call to .NET function failed
+
+/* Latest error -- Public reset via of_ResetError */
+PRIVATEWRITE Long il_ErrorType   
+PRIVATEWRITE Long il_ErrorNumber 
+PRIVATEWRITE String is_ErrorText 
+
+PRIVATE:
+/*  .NET object creation */
+Boolean ib_objectCreated
+end variables
+
+forward prototypes
+public subroutine of_setassemblyerror (long al_errortype, string as_actiontext, long al_errornumber, string as_errortext)
+public subroutine of_reseterror ()
+public function boolean of_createondemand ()
+public function dotnetobject of_createtitle(string as_title,dotnetobject anv_writer)
+public subroutine  of_addchild(dotnetobject anv_child)
+public subroutine  of_setcreatorinfo(string as_creator,string as_subtype)
+public subroutine  of_setlanguage(string as_lang,boolean abln_preferred)
+public subroutine  of_setzoom(real ar_min,real ar_max)
+public subroutine  of_setprint(string as_subtype,boolean abln_printstate)
+public subroutine  of_setuser(string as_type,string as_names[])
+public subroutine  of_topdf(dotnetobject anv_writer,dotnetobject anv_os)
+public subroutine  of_put(dotnetobject anv_key,dotnetobject anv_value)
+public subroutine  of_putex(dotnetobject anv_key,dotnetobject anv_value)
+public subroutine  of_putall(dotnetobject anv_dic)
+public subroutine  of_remove(dotnetobject anv_key)
+public subroutine  of_clear()
+public function dotnetobject of_get(dotnetobject anv_key)
+public function boolean of_isfont()
+public function boolean of_ispage()
+public function boolean of_ispages()
+public function boolean of_iscatalog()
+public function boolean of_isoutlinetree()
+public function boolean of_checktype(dotnetobject anv_type)
+public subroutine  of_merge(dotnetobject anv_other)
+public subroutine  of_mergedifferent(dotnetobject anv_other)
+public function boolean of_contains(dotnetobject anv_key)
+public function string of_tostring()
+public function dotnetobject of_getdirectobject(dotnetobject anv_key)
+public function dotnetobject of_getasdict(dotnetobject anv_key)
+public function dotnetobject of_getasarray(dotnetobject anv_key)
+public function dotnetobject of_getasstream(dotnetobject anv_key)
+public function dotnetobject of_getasstring(dotnetobject anv_key)
+public function dotnetobject of_getasnumber(dotnetobject anv_key)
+public function dotnetobject of_getasname(dotnetobject anv_key)
+public function dotnetobject of_getasboolean(dotnetobject anv_key)
+public function dotnetobject of_getasindirectobject(dotnetobject anv_key)
+public function blob of_getbytes()
+public function boolean of_canbeinobjstm()
+public function boolean of_isnull()
+public function boolean of_isboolean()
+public function boolean of_isnumber()
+public function boolean of_isstring()
+public function boolean of_isname()
+public function boolean of_isarray()
+public function boolean of_isdictionary()
+public function boolean of_isstream()
+public function boolean of_isindirect()
+public function long of_compareto(dotnetobject anv_obj)
+public function long of_gethashcode()
+public function boolean of_equals(dotnetobject anv_obj)
+public function dotnetobject get_parent()
+public function dotnetobject get_children()
+public function dotnetobject get_ref()
+public subroutine  set_ref(dotnetobject anv_value)
+public subroutine  set_name(string as_value)
+public function dotnetobject get_pdfobject()
+public function boolean get_on()
+public subroutine  set_on(boolean abln_value)
+public subroutine  set_export(boolean abln_value)
+public subroutine  set_view(boolean abln_value)
+public subroutine  set_pageelement(string as_value)
+public function boolean get_onpanel()
+public subroutine  set_onpanel(boolean abln_value)
+public function dotnetobject get_keys()
+public function long get_size()
+public function long get_length()
+public function long get_type()
+public function dotnetobject get_indref()
+public subroutine  set_indref(dotnetobject anv_value)
+end prototypes
+
+public subroutine of_setassemblyerror (long al_errortype, string as_actiontext, long al_errornumber, string as_errortext);
+//*----------------------------------------------------------------------------------------------*/
+//* PRIVATE of_setAssemblyError
+//* Sets error description for specified error condition report by an assembly function
+//*
+//* Error description layout
+//* 		| <actionText> failed.<EOL>
+//* 		| Error Number: <errorNumber><EOL>
+//* 		| Error Text: <errorText> (*)
+//*  (*): Line skipped when <ErrorText> is empty
+//*----------------------------------------------------------------------------------------------*/
+
+/*    Format description */
+String ls_error
+ls_error = as_actionText + " failed.~r~n"
+ls_error += "Error Number: " + String(al_errorNumber) + "."
+If Len(Trim(as_errorText)) > 0 Then
+	ls_error += "~r~nError Text: " + as_errorText
+End If
+
+/*  Retain state in instance variables */
+This.il_ErrorType = al_errorType
+This.is_ErrorText = ls_error
+This.il_ErrorNumber = al_errorNumber
+end subroutine
+
+public subroutine of_reseterror ();
+//*--------------------------------------------*/
+//* PUBLIC of_ResetError
+//* Clears previously registered error
+//*--------------------------------------------*/
+
+This.il_ErrorType = This.SUCCESS
+This.is_ErrorText = ''
+This.il_ErrorNumber = 0
+end subroutine
+
+public function boolean of_createondemand ();
+//*--------------------------------------------------------------*/
+//*  PUBLIC   of_createOnDemand( )
+//*  Return   True:  .NET object created
+//*               False: Failed to create .NET object
+//*  Loads .NET assembly and creates instance of .NET class.
+//*  Uses .NET when loading .NET assembly.
+//*  Signals error If an error occurs.
+//*  Resets any prior error when load + create succeeds.
+//*--------------------------------------------------------------*/
+
+This.of_ResetError( )
+If This.ib_objectCreated Then Return True // Already created => DONE
+
+Long ll_status 
+String ls_action
+
+/* Load assembly using .NET */
+ls_action = 'Load ' + This.is_AssemblyPath
+DotNetAssembly lnv_assembly
+lnv_assembly = Create DotNetAssembly
+ll_status = lnv_assembly.LoadWithDotNet(This.is_AssemblyPath)
+
+/* Abort when load fails */
+If ll_status <> 1 Then
+	This.of_SetAssemblyError(This.LOAD_FAILURE, ls_action, ll_status, lnv_assembly.ErrorText)
+	Return False // Load failed => ABORT
+End If
+
+/*   Create .NET object */
+ls_action = 'Create ' + This.is_ClassName
+ll_status = lnv_assembly.CreateInstance(is_ClassName, This)
+
+/* Abort when create fails */
+If ll_status <> 1 Then
+	This.of_SetAssemblyError(This.CREATE_FAILURE, ls_action, ll_status, lnv_assembly.ErrorText)
+	Return False // Load failed => ABORT
+End If
+
+This.ib_objectCreated = True
+Return True
+end function
+
+public function dotnetobject of_createtitle(string as_title,dotnetobject anv_writer);
+//*-----------------------------------------------------------------*/
+//*  .NET function : CreateTitle
+//*   Argument:
+//*              String as_title
+//*              Dotnetobject anv_writer
+//*   Return : Dotnetobject
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Dotnetobject lnv_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lnv_result)
+	Return lnv_result
+End If
+
+/* Trigger the dotnet function */
+lnv_result = This.createtitle(as_title,anv_writer)
+Return lnv_result
+end function
+
+public subroutine  of_addchild(dotnetobject anv_child);
+//*-----------------------------------------------------------------*/
+//*  .NET function : AddChild
+//*   Argument:
+//*              Dotnetobject anv_child
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet function */
+This.addchild(anv_child)
+end subroutine
+
+public subroutine  of_setcreatorinfo(string as_creator,string as_subtype);
+//*-----------------------------------------------------------------*/
+//*  .NET function : SetCreatorInfo
+//*   Argument:
+//*              String as_creator
+//*              String as_subtype
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet function */
+This.setcreatorinfo(as_creator,as_subtype)
+end subroutine
+
+public subroutine  of_setlanguage(string as_lang,boolean abln_preferred);
+//*-----------------------------------------------------------------*/
+//*  .NET function : SetLanguage
+//*   Argument:
+//*              String as_lang
+//*              Boolean abln_preferred
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet function */
+This.setlanguage(as_lang,abln_preferred)
+end subroutine
+
+public subroutine  of_setzoom(real ar_min,real ar_max);
+//*-----------------------------------------------------------------*/
+//*  .NET function : SetZoom
+//*   Argument:
+//*              Real ar_min
+//*              Real ar_max
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet function */
+This.setzoom(ar_min,ar_max)
+end subroutine
+
+public subroutine  of_setprint(string as_subtype,boolean abln_printstate);
+//*-----------------------------------------------------------------*/
+//*  .NET function : SetPrint
+//*   Argument:
+//*              String as_subtype
+//*              Boolean abln_printstate
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet function */
+This.setprint(as_subtype,abln_printstate)
+end subroutine
+
+public subroutine  of_setuser(string as_type,string as_names[]);
+//*-----------------------------------------------------------------*/
+//*  .NET function : SetUser
+//*   Argument:
+//*              String as_type
+//*              String as_names[]
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet function */
+This.setuser(as_type,as_names)
+end subroutine
+
+public subroutine  of_topdf(dotnetobject anv_writer,dotnetobject anv_os);
+//*-----------------------------------------------------------------*/
+//*  .NET function : ToPdf
+//*   Argument:
+//*              Dotnetobject anv_writer
+//*              Dotnetobject anv_os
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet function */
+This.topdf(anv_writer,anv_os)
+end subroutine
+
+public subroutine  of_put(dotnetobject anv_key,dotnetobject anv_value);
+//*-----------------------------------------------------------------*/
+//*  .NET function : Put
+//*   Argument:
+//*              Dotnetobject anv_key
+//*              Dotnetobject anv_value
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet function */
+This.put(anv_key,anv_value)
+end subroutine
+
+public subroutine  of_putex(dotnetobject anv_key,dotnetobject anv_value);
+//*-----------------------------------------------------------------*/
+//*  .NET function : PutEx
+//*   Argument:
+//*              Dotnetobject anv_key
+//*              Dotnetobject anv_value
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet function */
+This.putex(anv_key,anv_value)
+end subroutine
+
+public subroutine  of_putall(dotnetobject anv_dic);
+//*-----------------------------------------------------------------*/
+//*  .NET function : PutAll
+//*   Argument:
+//*              Dotnetobject anv_dic
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet function */
+This.putall(anv_dic)
+end subroutine
+
+public subroutine  of_remove(dotnetobject anv_key);
+//*-----------------------------------------------------------------*/
+//*  .NET function : Remove
+//*   Argument:
+//*              Dotnetobject anv_key
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet function */
+This.remove(anv_key)
+end subroutine
+
+public subroutine  of_clear();
+//*-----------------------------------------------------------------*/
+//*  .NET function : Clear
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet function */
+This.clear()
+end subroutine
+
+public function dotnetobject of_get(dotnetobject anv_key);
+//*-----------------------------------------------------------------*/
+//*  .NET function : Get
+//*   Argument:
+//*              Dotnetobject anv_key
+//*   Return : Dotnetobject
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Dotnetobject lnv_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lnv_result)
+	Return lnv_result
+End If
+
+/* Trigger the dotnet function */
+lnv_result = This.get(anv_key)
+Return lnv_result
+end function
+
+public function boolean of_isfont();
+//*-----------------------------------------------------------------*/
+//*  .NET function : IsFont
+//*   Return : Boolean
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Boolean lbln_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lbln_result)
+	Return lbln_result
+End If
+
+/* Trigger the dotnet function */
+lbln_result = This.isfont()
+Return lbln_result
+end function
+
+public function boolean of_ispage();
+//*-----------------------------------------------------------------*/
+//*  .NET function : IsPage
+//*   Return : Boolean
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Boolean lbln_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lbln_result)
+	Return lbln_result
+End If
+
+/* Trigger the dotnet function */
+lbln_result = This.ispage()
+Return lbln_result
+end function
+
+public function boolean of_ispages();
+//*-----------------------------------------------------------------*/
+//*  .NET function : IsPages
+//*   Return : Boolean
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Boolean lbln_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lbln_result)
+	Return lbln_result
+End If
+
+/* Trigger the dotnet function */
+lbln_result = This.ispages()
+Return lbln_result
+end function
+
+public function boolean of_iscatalog();
+//*-----------------------------------------------------------------*/
+//*  .NET function : IsCatalog
+//*   Return : Boolean
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Boolean lbln_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lbln_result)
+	Return lbln_result
+End If
+
+/* Trigger the dotnet function */
+lbln_result = This.iscatalog()
+Return lbln_result
+end function
+
+public function boolean of_isoutlinetree();
+//*-----------------------------------------------------------------*/
+//*  .NET function : IsOutlineTree
+//*   Return : Boolean
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Boolean lbln_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lbln_result)
+	Return lbln_result
+End If
+
+/* Trigger the dotnet function */
+lbln_result = This.isoutlinetree()
+Return lbln_result
+end function
+
+public function boolean of_checktype(dotnetobject anv_type);
+//*-----------------------------------------------------------------*/
+//*  .NET function : CheckType
+//*   Argument:
+//*              Dotnetobject anv_type
+//*   Return : Boolean
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Boolean lbln_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lbln_result)
+	Return lbln_result
+End If
+
+/* Trigger the dotnet function */
+lbln_result = This.checktype(anv_type)
+Return lbln_result
+end function
+
+public subroutine  of_merge(dotnetobject anv_other);
+//*-----------------------------------------------------------------*/
+//*  .NET function : Merge
+//*   Argument:
+//*              Dotnetobject anv_other
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet function */
+This.merge(anv_other)
+end subroutine
+
+public subroutine  of_mergedifferent(dotnetobject anv_other);
+//*-----------------------------------------------------------------*/
+//*  .NET function : MergeDifferent
+//*   Argument:
+//*              Dotnetobject anv_other
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet function */
+This.mergedifferent(anv_other)
+end subroutine
+
+public function boolean of_contains(dotnetobject anv_key);
+//*-----------------------------------------------------------------*/
+//*  .NET function : Contains
+//*   Argument:
+//*              Dotnetobject anv_key
+//*   Return : Boolean
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Boolean lbln_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lbln_result)
+	Return lbln_result
+End If
+
+/* Trigger the dotnet function */
+lbln_result = This.contains(anv_key)
+Return lbln_result
+end function
+
+public function string of_tostring();
+//*-----------------------------------------------------------------*/
+//*  .NET function : ToString
+//*   Return : String
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+String ls_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(ls_result)
+	Return ls_result
+End If
+
+/* Trigger the dotnet function */
+ls_result = This.tostring()
+Return ls_result
+end function
+
+public function dotnetobject of_getdirectobject(dotnetobject anv_key);
+//*-----------------------------------------------------------------*/
+//*  .NET function : GetDirectObject
+//*   Argument:
+//*              Dotnetobject anv_key
+//*   Return : Dotnetobject
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Dotnetobject lnv_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lnv_result)
+	Return lnv_result
+End If
+
+/* Trigger the dotnet function */
+lnv_result = This.getdirectobject(anv_key)
+Return lnv_result
+end function
+
+public function dotnetobject of_getasdict(dotnetobject anv_key);
+//*-----------------------------------------------------------------*/
+//*  .NET function : GetAsDict
+//*   Argument:
+//*              Dotnetobject anv_key
+//*   Return : Dotnetobject
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Dotnetobject lnv_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lnv_result)
+	Return lnv_result
+End If
+
+/* Trigger the dotnet function */
+lnv_result = This.getasdict(anv_key)
+Return lnv_result
+end function
+
+public function dotnetobject of_getasarray(dotnetobject anv_key);
+//*-----------------------------------------------------------------*/
+//*  .NET function : GetAsArray
+//*   Argument:
+//*              Dotnetobject anv_key
+//*   Return : Dotnetobject
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Dotnetobject lnv_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lnv_result)
+	Return lnv_result
+End If
+
+/* Trigger the dotnet function */
+lnv_result = This.getasarray(anv_key)
+Return lnv_result
+end function
+
+public function dotnetobject of_getasstream(dotnetobject anv_key);
+//*-----------------------------------------------------------------*/
+//*  .NET function : GetAsStream
+//*   Argument:
+//*              Dotnetobject anv_key
+//*   Return : Dotnetobject
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Dotnetobject lnv_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lnv_result)
+	Return lnv_result
+End If
+
+/* Trigger the dotnet function */
+lnv_result = This.getasstream(anv_key)
+Return lnv_result
+end function
+
+public function dotnetobject of_getasstring(dotnetobject anv_key);
+//*-----------------------------------------------------------------*/
+//*  .NET function : GetAsString
+//*   Argument:
+//*              Dotnetobject anv_key
+//*   Return : Dotnetobject
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Dotnetobject lnv_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lnv_result)
+	Return lnv_result
+End If
+
+/* Trigger the dotnet function */
+lnv_result = This.getasstring(anv_key)
+Return lnv_result
+end function
+
+public function dotnetobject of_getasnumber(dotnetobject anv_key);
+//*-----------------------------------------------------------------*/
+//*  .NET function : GetAsNumber
+//*   Argument:
+//*              Dotnetobject anv_key
+//*   Return : Dotnetobject
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Dotnetobject lnv_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lnv_result)
+	Return lnv_result
+End If
+
+/* Trigger the dotnet function */
+lnv_result = This.getasnumber(anv_key)
+Return lnv_result
+end function
+
+public function dotnetobject of_getasname(dotnetobject anv_key);
+//*-----------------------------------------------------------------*/
+//*  .NET function : GetAsName
+//*   Argument:
+//*              Dotnetobject anv_key
+//*   Return : Dotnetobject
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Dotnetobject lnv_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lnv_result)
+	Return lnv_result
+End If
+
+/* Trigger the dotnet function */
+lnv_result = This.getasname(anv_key)
+Return lnv_result
+end function
+
+public function dotnetobject of_getasboolean(dotnetobject anv_key);
+//*-----------------------------------------------------------------*/
+//*  .NET function : GetAsBoolean
+//*   Argument:
+//*              Dotnetobject anv_key
+//*   Return : Dotnetobject
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Dotnetobject lnv_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lnv_result)
+	Return lnv_result
+End If
+
+/* Trigger the dotnet function */
+lnv_result = This.getasboolean(anv_key)
+Return lnv_result
+end function
+
+public function dotnetobject of_getasindirectobject(dotnetobject anv_key);
+//*-----------------------------------------------------------------*/
+//*  .NET function : GetAsIndirectObject
+//*   Argument:
+//*              Dotnetobject anv_key
+//*   Return : Dotnetobject
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Dotnetobject lnv_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lnv_result)
+	Return lnv_result
+End If
+
+/* Trigger the dotnet function */
+lnv_result = This.getasindirectobject(anv_key)
+Return lnv_result
+end function
+
+public function blob of_getbytes();
+//*-----------------------------------------------------------------*/
+//*  .NET function : GetBytes
+//*   Return : Blob
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Blob lbyt_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lbyt_result)
+	Return lbyt_result
+End If
+
+/* Trigger the dotnet function */
+lbyt_result = This.getbytes()
+Return lbyt_result
+end function
+
+public function boolean of_canbeinobjstm();
+//*-----------------------------------------------------------------*/
+//*  .NET function : CanBeInObjStm
+//*   Return : Boolean
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Boolean lbln_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lbln_result)
+	Return lbln_result
+End If
+
+/* Trigger the dotnet function */
+lbln_result = This.canbeinobjstm()
+Return lbln_result
+end function
+
+public function boolean of_isnull();
+//*-----------------------------------------------------------------*/
+//*  .NET function : IsNull
+//*   Return : Boolean
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Boolean lbln_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lbln_result)
+	Return lbln_result
+End If
+
+/* Trigger the dotnet function */
+lbln_result = This.isnull()
+Return lbln_result
+end function
+
+public function boolean of_isboolean();
+//*-----------------------------------------------------------------*/
+//*  .NET function : IsBoolean
+//*   Return : Boolean
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Boolean lbln_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lbln_result)
+	Return lbln_result
+End If
+
+/* Trigger the dotnet function */
+lbln_result = This.isboolean()
+Return lbln_result
+end function
+
+public function boolean of_isnumber();
+//*-----------------------------------------------------------------*/
+//*  .NET function : IsNumber
+//*   Return : Boolean
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Boolean lbln_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lbln_result)
+	Return lbln_result
+End If
+
+/* Trigger the dotnet function */
+lbln_result = This.isnumber()
+Return lbln_result
+end function
+
+public function boolean of_isstring();
+//*-----------------------------------------------------------------*/
+//*  .NET function : IsString
+//*   Return : Boolean
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Boolean lbln_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lbln_result)
+	Return lbln_result
+End If
+
+/* Trigger the dotnet function */
+lbln_result = This.isstring()
+Return lbln_result
+end function
+
+public function boolean of_isname();
+//*-----------------------------------------------------------------*/
+//*  .NET function : IsName
+//*   Return : Boolean
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Boolean lbln_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lbln_result)
+	Return lbln_result
+End If
+
+/* Trigger the dotnet function */
+lbln_result = This.isname()
+Return lbln_result
+end function
+
+public function boolean of_isarray();
+//*-----------------------------------------------------------------*/
+//*  .NET function : IsArray
+//*   Return : Boolean
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Boolean lbln_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lbln_result)
+	Return lbln_result
+End If
+
+/* Trigger the dotnet function */
+lbln_result = This.isarray()
+Return lbln_result
+end function
+
+public function boolean of_isdictionary();
+//*-----------------------------------------------------------------*/
+//*  .NET function : IsDictionary
+//*   Return : Boolean
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Boolean lbln_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lbln_result)
+	Return lbln_result
+End If
+
+/* Trigger the dotnet function */
+lbln_result = This.isdictionary()
+Return lbln_result
+end function
+
+public function boolean of_isstream();
+//*-----------------------------------------------------------------*/
+//*  .NET function : IsStream
+//*   Return : Boolean
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Boolean lbln_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lbln_result)
+	Return lbln_result
+End If
+
+/* Trigger the dotnet function */
+lbln_result = This.isstream()
+Return lbln_result
+end function
+
+public function boolean of_isindirect();
+//*-----------------------------------------------------------------*/
+//*  .NET function : IsIndirect
+//*   Return : Boolean
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Boolean lbln_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lbln_result)
+	Return lbln_result
+End If
+
+/* Trigger the dotnet function */
+lbln_result = This.isindirect()
+Return lbln_result
+end function
+
+public function long of_compareto(dotnetobject anv_obj);
+//*-----------------------------------------------------------------*/
+//*  .NET function : CompareTo
+//*   Argument:
+//*              Dotnetobject anv_obj
+//*   Return : Long
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Long ll_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(ll_result)
+	Return ll_result
+End If
+
+/* Trigger the dotnet function */
+ll_result = This.compareto(anv_obj)
+Return ll_result
+end function
+
+public function long of_gethashcode();
+//*-----------------------------------------------------------------*/
+//*  .NET function : GetHashCode
+//*   Return : Long
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Long ll_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(ll_result)
+	Return ll_result
+End If
+
+/* Trigger the dotnet function */
+ll_result = This.gethashcode()
+Return ll_result
+end function
+
+public function boolean of_equals(dotnetobject anv_obj);
+//*-----------------------------------------------------------------*/
+//*  .NET function : Equals
+//*   Argument:
+//*              Dotnetobject anv_obj
+//*   Return : Boolean
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet function */
+Boolean lbln_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lbln_result)
+	Return lbln_result
+End If
+
+/* Trigger the dotnet function */
+lbln_result = This.equals(anv_obj)
+Return lbln_result
+end function
+
+public function dotnetobject get_parent();
+//*-----------------------------------------------------------------*/
+//*  .NET property : Parent
+//*   Return : Dotnetobject
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet property */
+Dotnetobject lnv_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lnv_result)
+	Return lnv_result
+End If
+
+/* Trigger the dotnet property */
+lnv_result = This.parent
+Return lnv_result
+end function
+
+public function dotnetobject get_children();
+//*-----------------------------------------------------------------*/
+//*  .NET property : Children
+//*   Return : Dotnetobject
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet property */
+Dotnetobject lnv_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lnv_result)
+	Return lnv_result
+End If
+
+/* Trigger the dotnet property */
+lnv_result = This.children
+Return lnv_result
+end function
+
+public function dotnetobject get_ref();
+//*-----------------------------------------------------------------*/
+//*  .NET property : Ref
+//*   Return : Dotnetobject
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet property */
+Dotnetobject lnv_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lnv_result)
+	Return lnv_result
+End If
+
+/* Trigger the dotnet property */
+lnv_result = This.ref
+Return lnv_result
+end function
+
+public subroutine  set_ref(dotnetobject anv_value);
+//*-----------------------------------------------------------------*/
+//*  .NET property : Ref
+//*   Argument:
+//*              Dotnetobject anv_value
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet property */
+This.ref = anv_value
+end subroutine
+
+public subroutine  set_name(string as_value);
+//*-----------------------------------------------------------------*/
+//*  .NET property : Name
+//*   Argument:
+//*              String as_value
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet property */
+This.name = as_value
+end subroutine
+
+public function dotnetobject get_pdfobject();
+//*-----------------------------------------------------------------*/
+//*  .NET property : PdfObject
+//*   Return : Dotnetobject
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet property */
+Dotnetobject lnv_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lnv_result)
+	Return lnv_result
+End If
+
+/* Trigger the dotnet property */
+lnv_result = This.pdfobject
+Return lnv_result
+end function
+
+public function boolean get_on();
+//*-----------------------------------------------------------------*/
+//*  .NET property : On
+//*   Return : Boolean
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet property */
+Boolean lbln_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lbln_result)
+	Return lbln_result
+End If
+
+/* Trigger the dotnet property */
+lbln_result = This.on
+Return lbln_result
+end function
+
+public subroutine  set_on(boolean abln_value);
+//*-----------------------------------------------------------------*/
+//*  .NET property : On
+//*   Argument:
+//*              Boolean abln_value
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet property */
+This.on = abln_value
+end subroutine
+
+public subroutine  set_export(boolean abln_value);
+//*-----------------------------------------------------------------*/
+//*  .NET property : Export
+//*   Argument:
+//*              Boolean abln_value
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet property */
+This.export = abln_value
+end subroutine
+
+public subroutine  set_view(boolean abln_value);
+//*-----------------------------------------------------------------*/
+//*  .NET property : View
+//*   Argument:
+//*              Boolean abln_value
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet property */
+This.view = abln_value
+end subroutine
+
+public subroutine  set_pageelement(string as_value);
+//*-----------------------------------------------------------------*/
+//*  .NET property : PageElement
+//*   Argument:
+//*              String as_value
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet property */
+This.pageelement = as_value
+end subroutine
+
+public function boolean get_onpanel();
+//*-----------------------------------------------------------------*/
+//*  .NET property : OnPanel
+//*   Return : Boolean
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet property */
+Boolean lbln_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lbln_result)
+	Return lbln_result
+End If
+
+/* Trigger the dotnet property */
+lbln_result = This.onpanel
+Return lbln_result
+end function
+
+public subroutine  set_onpanel(boolean abln_value);
+//*-----------------------------------------------------------------*/
+//*  .NET property : OnPanel
+//*   Argument:
+//*              Boolean abln_value
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet property */
+This.onpanel = abln_value
+end subroutine
+
+public function dotnetobject get_keys();
+//*-----------------------------------------------------------------*/
+//*  .NET property : Keys
+//*   Return : Dotnetobject
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet property */
+Dotnetobject lnv_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lnv_result)
+	Return lnv_result
+End If
+
+/* Trigger the dotnet property */
+lnv_result = This.keys
+Return lnv_result
+end function
+
+public function long get_size();
+//*-----------------------------------------------------------------*/
+//*  .NET property : Size
+//*   Return : Long
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet property */
+Long ll_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(ll_result)
+	Return ll_result
+End If
+
+/* Trigger the dotnet property */
+ll_result = This.size
+Return ll_result
+end function
+
+public function long get_length();
+//*-----------------------------------------------------------------*/
+//*  .NET property : Length
+//*   Return : Long
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet property */
+Long ll_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(ll_result)
+	Return ll_result
+End If
+
+/* Trigger the dotnet property */
+ll_result = This.length
+Return ll_result
+end function
+
+public function long get_type();
+//*-----------------------------------------------------------------*/
+//*  .NET property : Type
+//*   Return : Long
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet property */
+Long ll_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(ll_result)
+	Return ll_result
+End If
+
+/* Trigger the dotnet property */
+ll_result = This.type
+Return ll_result
+end function
+
+public function dotnetobject get_indref();
+//*-----------------------------------------------------------------*/
+//*  .NET property : IndRef
+//*   Return : Dotnetobject
+//*-----------------------------------------------------------------*/
+/* Store the Return value from dotnet property */
+Dotnetobject lnv_result
+
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	SetNull(lnv_result)
+	Return lnv_result
+End If
+
+/* Trigger the dotnet property */
+lnv_result = This.indref
+Return lnv_result
+end function
+
+public subroutine  set_indref(dotnetobject anv_value);
+//*-----------------------------------------------------------------*/
+//*  .NET property : IndRef
+//*   Argument:
+//*              Dotnetobject anv_value
+//*   Return : (None)
+//*-----------------------------------------------------------------*/
+/* Create .NET object */
+If Not This.of_createOnDemand( ) Then
+	Return 
+End If
+
+/* Trigger the dotnet property */
+This.indref = anv_value
+end subroutine
+
+on nvo_pdflayer.create
+call super::create
+triggerevent( this, "constructor" )
+end on
+
+on nvo_pdflayer.destroy
+triggerevent( this, "destructor" )
+call super::destroy
+end on
+
