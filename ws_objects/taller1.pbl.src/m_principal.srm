@@ -14,12 +14,15 @@ type m_ejemplodegráficapersonalizada from menu within m_ejemplodegrafica
 end type
 type m_ejemplodesnap from menu within m_ejemplodegrafica
 end type
+type m_ejemploconsumoapi from menu within m_ejemplodegrafica
+end type
 type m_ejemplodegrafica from menu within m_principal
 m_ejemplodeventana m_ejemplodeventana
 m_ejemplodecrud m_ejemplodecrud
 m_ejemplodegráfica m_ejemplodegráfica
 m_ejemplodegráficapersonalizada m_ejemplodegráficapersonalizada
 m_ejemplodesnap m_ejemplodesnap
+m_ejemploconsumoapi m_ejemploconsumoapi
 end type
 global type m_principal from menu
 m_ejemplodegrafica m_ejemplodegrafica
@@ -65,6 +68,7 @@ m_ejemplodecrud m_ejemplodecrud
 m_ejemplodegráfica m_ejemplodegráfica
 m_ejemplodegráficapersonalizada m_ejemplodegráficapersonalizada
 m_ejemplodesnap m_ejemplodesnap
+m_ejemploconsumoapi m_ejemploconsumoapi
 end type
 
 on m_ejemplodegrafica.create
@@ -90,11 +94,13 @@ this.m_ejemplodecrud=create m_ejemplodecrud
 this.m_ejemplodegráfica=create m_ejemplodegráfica
 this.m_ejemplodegráficapersonalizada=create m_ejemplodegráficapersonalizada
 this.m_ejemplodesnap=create m_ejemplodesnap
+this.m_ejemploconsumoapi=create m_ejemploconsumoapi
 this.Item[UpperBound(this.Item)+1]=this.m_ejemplodeventana
 this.Item[UpperBound(this.Item)+1]=this.m_ejemplodecrud
 this.Item[UpperBound(this.Item)+1]=this.m_ejemplodegráfica
 this.Item[UpperBound(this.Item)+1]=this.m_ejemplodegráficapersonalizada
 this.Item[UpperBound(this.Item)+1]=this.m_ejemplodesnap
+this.Item[UpperBound(this.Item)+1]=this.m_ejemploconsumoapi
 end on
 
 on m_ejemplodegrafica.destroy
@@ -104,6 +110,7 @@ destroy(this.m_ejemplodecrud)
 destroy(this.m_ejemplodegráfica)
 destroy(this.m_ejemplodegráficapersonalizada)
 destroy(this.m_ejemplodesnap)
+destroy(this.m_ejemploconsumoapi)
 end on
 
 type m_ejemplodeventana from menu within m_ejemplodegrafica
@@ -253,6 +260,36 @@ this.bitmapgradient = true
 end on
 
 on m_ejemplodesnap.destroy
+call super::destroy
+end on
+
+type m_ejemploconsumoapi from menu within m_ejemplodegrafica
+end type
+
+event clicked;open(w_consumo_api)
+end event
+
+on m_ejemploconsumoapi.create
+call super::create
+this.text = "Ejemplo Consumo API"
+this.menutextcolor = 134217735
+this.menubackcolor = 134217732
+this.menuhighlightcolor = 134217741
+this.textsize = 8
+this.weight = 400
+this.facename = "Tahoma"
+this.titlebackcolor = 134217730
+this.bitmapbackcolor = 12632256
+this.menubitmaps = true
+this.titlegradient = true
+this.toolbartextcolor = 134217746
+this.toolbarbackcolor = 67108864
+this.toolbarhighlightcolor = 134217741
+this.toolbargradient = true
+this.bitmapgradient = true
+end on
+
+on m_ejemploconsumoapi.destroy
 call super::destroy
 end on
 

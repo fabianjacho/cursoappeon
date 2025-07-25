@@ -26,7 +26,7 @@ global type w_usuario from window
 integer width = 4727
 integer height = 1956
 boolean titlebar = true
-string title = "Untitled"
+string title = "Usuario"
 boolean controlmenu = true
 boolean minbox = true
 windowtype windowtype = popup!
